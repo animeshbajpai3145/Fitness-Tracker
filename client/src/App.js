@@ -1,14 +1,17 @@
 import {ThemeProvider,styled} from "styled-components";
 import {lightTheme} from "./utils/Themes";
-import {BrowserRouter} from "react-router-dom";
+import {BrowserRouter,Routes, Route} from "react-router-dom";
 import Authentication from "./pages/Authetication";
 import {useState} from "react";
-import NavBar from "./components/Navbar";
+import Navbar from "./components/Navbar.jsx";
+import Dashboard from "./pages/Dashboard.jsx";
+import Workouts from "./pages/Workouts.jsx";
+
 const Container = styled.div`
 width:100%;
 height: 100vh;
 display:flex;
-flex-direction:column ;
+flex-direction:column;
 background:${({theme})=> theme.bg};
 color:${({theme})=> theme.text_primary};
 overflow-x:hidden;
@@ -22,11 +25,19 @@ function App() {
     
     <ThemeProvider theme={lightTheme}>
       <BrowserRouter>
-      {user ?(<Container><NavBar/></Container>):(<Container><Authentication></Authentication>
-      </Container>)}
+      {
+        user ?(<Container><Navbar/>
+        <Routes>
+          <Route path="/" exact element = {<Dashboard/>}/>
+          <Route path="/workouts" exact element = {<Workouts/>}/>
+        </Routes>
+        </Container>):(<Container><Authentication></Authentication>
+      </Container>)     
+      }
      
       </BrowserRouter>
     </ThemeProvider>
+
 
 
   ) 
