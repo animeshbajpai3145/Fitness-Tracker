@@ -43,20 +43,26 @@ const SignUp = () => {
   const handelSignUp = async () => {
     setLoading(true);
     setButtonDisabled(true);
-    if (validateInputs()) {
-      await UserSignUp({ name, email, password })
-        .then((res) => {
-          dispatch(loginSuccess(res.data));
-          alert("Account Created Success");
-          setLoading(false);
-          setButtonDisabled(false);
-        })
-        .catch((err) => {
-          alert(err.response.data.message);
-          setLoading(false);
-          setButtonDisabled(false);
-        });
+    if (!validateInputs()) {
+      setLoading(false);
+      setButtonDisabled(false);
+      return;
     }
+
+    await UserSignUp({ name, email, password })
+      .then((res) => {
+        dispatch(loginSuccess(res.data));
+        alert("Account Created Success");
+        setLoading(false);
+        setButtonDisabled(false);
+      })
+      .catch((err) => {
+        const message =
+          err?.response?.data?.message || err?.message || "Signup failed";
+        alert(message);
+        setLoading(false);
+        setButtonDisabled(false);
+      });
   };
   return (
     <Container>

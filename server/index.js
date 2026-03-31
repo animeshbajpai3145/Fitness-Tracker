@@ -7,9 +7,23 @@ import UserRoutes from "./routes/User.js";
 dotenv.config();
 
 const app = express();
-app.use(cors({
-  origin: "https://fitness-tracker-chi-inky.vercel.app"
-}));
+const allowedOrigins = (process.env.CORS_ORIGIN || process.env.CLIENT_ORIGIN)
+  ? (process.env.CORS_ORIGIN || process.env.CLIENT_ORIGIN)
+      .split(",")
+      .map((o) => o.trim())
+      .filter(Boolean)
+  : [];
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.length === 0) return callback(null, true);
+      if (allowedOrigins.includes(origin)) return callback(null, true);
+      return callback(new Error("Not allowed by CORS"));
+    },
+  })
+);
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ extended: true })); 
 
@@ -45,7 +59,8 @@ const connectDB = () => {
 const startServer = async () => {
   try {
     connectDB();
-    app.listen(8080, () => console.log("Server started on port 8080"));
+    const port = process.env.PORT || 8080;
+    app.listen(port, () => console.log(`Server started on port ${port}`));
   } catch (error) {
     console.log(error);
   }

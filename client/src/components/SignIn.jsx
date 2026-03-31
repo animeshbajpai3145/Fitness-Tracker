@@ -42,20 +42,26 @@ const SignIn = () => {
   const handelSignIn = async () => {
     setLoading(true);
     setButtonDisabled(true);
-    if (validateInputs()) {
-      await UserSignIn({ email, password })
-        .then((res) => {
-          dispatch(loginSuccess(res.data));
-          alert("Login Success");
-          setLoading(false);
-          setButtonDisabled(false);
-        })
-        .catch((err) => {
-          alert(err.response.data.message);
-          setLoading(false);
-          setButtonDisabled(false);
-        });
+    if (!validateInputs()) {
+      setLoading(false);
+      setButtonDisabled(false);
+      return;
     }
+
+    await UserSignIn({ email, password })
+      .then((res) => {
+        dispatch(loginSuccess(res.data));
+        alert("Login Success");
+        setLoading(false);
+        setButtonDisabled(false);
+      })
+      .catch((err) => {
+        const message =
+          err?.response?.data?.message || err?.message || "Login failed";
+        alert(message);
+        setLoading(false);
+        setButtonDisabled(false);
+      });
   };
 
   return (
